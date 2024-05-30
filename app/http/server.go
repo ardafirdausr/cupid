@@ -6,9 +6,12 @@ import (
 	"time"
 
 	"com.ardafirdausr.cupid/app/http/handler"
+	customMiddlware "com.ardafirdausr.cupid/app/http/middleware"
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog"
 )
+
+const timeout = 30000
 
 type httpServer struct {
 	echo   *echo.Echo
@@ -21,6 +24,10 @@ func newHTTPServer(port int, logger *zerolog.Logger) *httpServer {
 	e.HideBanner = true
 	e.HidePort = true
 	e.HTTPErrorHandler = handler.ErrorHandler
+	e.Use(customMiddlware.CORSMiddleware())
+	e.Use(customMiddlware.DumpLogMiddleware(logger))
+	e.Use(customMiddlware.TimeoutMiddleware(timeout, logger))
+	e.Use(customMiddlware.RecoverMiddleware(logger))
 
 	return &httpServer{
 		echo:   echo.New(),
