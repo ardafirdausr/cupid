@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"com.ardafirdausr.cupid/app/http/handler"
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog"
 )
@@ -19,6 +20,8 @@ func newHTTPServer(port int, logger *zerolog.Logger) *httpServer {
 	e := echo.New()
 	e.HideBanner = true
 	e.HidePort = true
+	e.HTTPErrorHandler = handler.ErrorHandler
+
 	return &httpServer{
 		echo:   echo.New(),
 		logger: logger,
