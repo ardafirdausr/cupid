@@ -9,7 +9,7 @@ package http
 import (
 	"com.ardafirdausr.cupid/app/http/handler"
 	"com.ardafirdausr.cupid/internal"
-	"com.ardafirdausr.cupid/internal/pkg/helper"
+	"com.ardafirdausr.cupid/internal/pkg/jwt"
 	"com.ardafirdausr.cupid/internal/pkg/mongo"
 	"com.ardafirdausr.cupid/internal/pkg/validator"
 	mongo2 "com.ardafirdausr.cupid/internal/repository/mongo"
@@ -40,8 +40,8 @@ func InitializeApp() (*app, func(), error) {
 	authHandler := handler.NewAuthHandler(authService, goPlaygroundValidator)
 	matchingMongoRepositry := mongo2.NewMatchingMongoRepository(database)
 	matchingService := service.NewMatchingService(matchingMongoRepositry)
-	injector := helper.Newinjector(userService)
-	matchingHandler := handler.NewMatchingHandler(matchingService, injector)
+	helper := jwt.NewHelper(userService)
+	matchingHandler := handler.NewMatchingHandler(matchingService, helper)
 	httpHttpRouter := newRouter(commonConfig, userHandler, authHandler, matchingHandler)
 	httpApp := newApp(config2, httpHttpServer, httpHttpRouter)
 	return httpApp, func() {
@@ -72,4 +72,4 @@ var repoSet = wire.NewSet(mongo2.NewUserMongoRepository, wire.Bind(new(internal.
 
 var driverSet = wire.NewSet(mongo.NewMongoDatabase)
 
-var pkgSet = wire.NewSet(validator.NewGoPlayValidator, wire.Bind(new(validator.Validator), new(*validator.GoPlaygroundValidator)), helper.Newinjector)
+var pkgSet = wire.NewSet(validator.NewGoPlayValidator, wire.Bind(new(validator.Validator), new(*validator.GoPlaygroundValidator)), jwt.NewHelper)

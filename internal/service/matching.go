@@ -18,7 +18,7 @@ func NewMatchingService(matchingRepo internal.MatchingRepositorier) *MatchingSer
 }
 
 func (svc *MatchingService) GetMatchingRecommendations(ctx context.Context, filter dto.MatchingRecommendationsFilter) ([]entity.User, error) {
-	filter.UserID = "6659d417e250f3c66261ce71"
+	// TODO: add recommendation by user's preference
 	users, err := svc.matchingRepo.GetMatchingRecommendations(ctx, filter)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get matching recommendations")

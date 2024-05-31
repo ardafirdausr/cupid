@@ -3,9 +3,26 @@ package dto
 import "com.ardafirdausr.cupid/internal/entity"
 
 type MatchingRecommendationsFilter struct {
-	UserID string `json:"userID"`
-	Age    int    `json:"age"`
-	Limit  int    `json:"limit"`
+	UserID string
+	Age    int `query:"age"`
+	Gender string
+	Limit  int `query:"limit"`
+}
+
+func (p *MatchingRecommendationsFilter) SetDefault() {
+	if p.Limit == 0 {
+		p.Limit = 10
+	}
+}
+
+func (p *MatchingRecommendationsFilter) SetByUser(user *entity.User) {
+	p.UserID = user.ID
+	switch user.Gender {
+	case entity.UserGenderFemale:
+		p.Gender = string(entity.UserGenderMale)
+	case entity.UserGenderMale:
+		p.Gender = string(entity.UserGenderFemale)
+	}
 }
 
 type CreateMatchingParam struct {

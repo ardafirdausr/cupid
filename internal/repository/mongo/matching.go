@@ -31,6 +31,9 @@ func (repo *MatchingMongoRepositry) GetMatchingRecommendations(ctx context.Conte
 				{Key: "_id", Value: bson.D{
 					{Key: "$ne", Value: filter.UserID},
 				}},
+				{Key: "gender", Value: bson.D{
+					{Key: "$eq", Value: filter.Gender},
+				}},
 			}},
 		},
 		bson.D{
@@ -48,7 +51,7 @@ func (repo *MatchingMongoRepositry) GetMatchingRecommendations(ctx context.Conte
 				}},
 			}},
 		},
-		bson.D{{Key: "$limit", Value: 10}},
+		bson.D{{Key: "$limit", Value: filter.Limit}},
 	}
 
 	cursor, err := repo.db.Collection("users").Aggregate(timeoutCtx, pipeline)

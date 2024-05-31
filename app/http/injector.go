@@ -5,7 +5,7 @@ package http
 import (
 	"com.ardafirdausr.cupid/app/http/handler"
 	"com.ardafirdausr.cupid/internal"
-	"com.ardafirdausr.cupid/internal/pkg/helper"
+	customJwt "com.ardafirdausr.cupid/internal/pkg/jwt"
 	"com.ardafirdausr.cupid/internal/pkg/mongo"
 	"com.ardafirdausr.cupid/internal/pkg/validator"
 	mongoRepository "com.ardafirdausr.cupid/internal/repository/mongo"
@@ -53,7 +53,7 @@ var driverSet = wire.NewSet(
 var pkgSet = wire.NewSet(
 	validator.NewGoPlayValidator,
 	wire.Bind(new(validator.Validator), new(*validator.GoPlaygroundValidator)),
-	helper.Newinjector,
+	customJwt.NewHelper,
 )
 
 func InitializeApp() (*app, func(), error) {

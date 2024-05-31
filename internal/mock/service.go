@@ -36,6 +36,21 @@ func (m *MockUserServicer) EXPECT() *MockUserServicerMockRecorder {
 	return m.recorder
 }
 
+// GetUserByID mocks base method.
+func (m *MockUserServicer) GetUserByID(ctx context.Context, id string) (*entity.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUserByID", ctx, id)
+	ret0, _ := ret[0].(*entity.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUserByID indicates an expected call of GetUserByID.
+func (mr *MockUserServicerMockRecorder) GetUserByID(ctx, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByID", reflect.TypeOf((*MockUserServicer)(nil).GetUserByID), ctx, id)
+}
+
 // UpdateUser mocks base method.
 func (m *MockUserServicer) UpdateUser(ctx context.Context, param dto.UpdateUserParam) (*entity.User, error) {
 	m.ctrl.T.Helper()
@@ -104,4 +119,57 @@ func (m *MockAuthServicer) Register(ctx context.Context, param dto.RegisterUserP
 func (mr *MockAuthServicerMockRecorder) Register(ctx, param interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Register", reflect.TypeOf((*MockAuthServicer)(nil).Register), ctx, param)
+}
+
+// MockMatchingServicer is a mock of MatchingServicer interface.
+type MockMatchingServicer struct {
+	ctrl     *gomock.Controller
+	recorder *MockMatchingServicerMockRecorder
+}
+
+// MockMatchingServicerMockRecorder is the mock recorder for MockMatchingServicer.
+type MockMatchingServicerMockRecorder struct {
+	mock *MockMatchingServicer
+}
+
+// NewMockMatchingServicer creates a new mock instance.
+func NewMockMatchingServicer(ctrl *gomock.Controller) *MockMatchingServicer {
+	mock := &MockMatchingServicer{ctrl: ctrl}
+	mock.recorder = &MockMatchingServicerMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockMatchingServicer) EXPECT() *MockMatchingServicerMockRecorder {
+	return m.recorder
+}
+
+// CreateMatching mocks base method.
+func (m *MockMatchingServicer) CreateMatching(ctx context.Context, param dto.CreateMatchingParam) (*entity.Matching, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateMatching", ctx, param)
+	ret0, _ := ret[0].(*entity.Matching)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateMatching indicates an expected call of CreateMatching.
+func (mr *MockMatchingServicerMockRecorder) CreateMatching(ctx, param interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateMatching", reflect.TypeOf((*MockMatchingServicer)(nil).CreateMatching), ctx, param)
+}
+
+// GetMatchingRecommendations mocks base method.
+func (m *MockMatchingServicer) GetMatchingRecommendations(ctx context.Context, filter dto.MatchingRecommendationsFilter) ([]entity.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetMatchingRecommendations", ctx, filter)
+	ret0, _ := ret[0].([]entity.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetMatchingRecommendations indicates an expected call of GetMatchingRecommendations.
+func (mr *MockMatchingServicerMockRecorder) GetMatchingRecommendations(ctx, filter interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMatchingRecommendations", reflect.TypeOf((*MockMatchingServicer)(nil).GetMatchingRecommendations), ctx, filter)
 }
