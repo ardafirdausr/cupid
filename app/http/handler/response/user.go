@@ -12,7 +12,7 @@ type UserResponse struct {
 }
 
 func (resp *UserResponse) FromUser(user *entity.User) {
-	resp.ID = user.ID.Hex()
+	resp.ID = user.ID
 	resp.Name = user.Name
 	resp.Email = user.Email
 	resp.Bio = user.Bio

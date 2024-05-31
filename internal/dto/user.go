@@ -35,7 +35,7 @@ func (p *RegisterUserParam) ToUser(user *entity.User) (err error) {
 }
 
 type UpdateUserParam struct {
-	ID        string `json:"id" validate:"required"`
+	ID        string `json:"id" path:"id" validate:"required"`
 	Name      string `json:"name" validate:"required,min=3,max=50"`
 	Bio       string `json:"bio" validate:"omitempty,min=10,max=255"`
 	BirthDate string `json:"birth_date" validate:"required,datetime=2006-01-02"`

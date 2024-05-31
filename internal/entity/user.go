@@ -4,8 +4,6 @@ import (
 	"crypto"
 	"encoding/base64"
 	"time"
-
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type UserGender string
@@ -16,13 +14,13 @@ const (
 )
 
 type User struct {
-	ID        primitive.ObjectID `json:"id" bson:"_id"`
-	Email     string             `json:"email" bson:"email"`
-	Password  string             `json:"-" bson:"password" `
-	Name      string             `json:"name" bson:"name" `
-	Bio       string             `json:"bio" bson:"bio" `
-	Gender    UserGender         `json:"gender" bson:"gender"`
-	BirthDate time.Time          `json:"birth_date" bson:"birthDate"`
+	ID        string     `json:"id" bson:"_id"`
+	Email     string     `json:"email" bson:"email"`
+	Password  string     `json:"-" bson:"password" `
+	Name      string     `json:"name" bson:"name" `
+	Bio       string     `json:"bio" bson:"bio" `
+	Gender    UserGender `json:"gender" bson:"gender"`
+	BirthDate time.Time  `json:"birth_date" bson:"birthDate"`
 }
 
 func (user *User) Age() int {

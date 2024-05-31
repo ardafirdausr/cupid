@@ -7,6 +7,7 @@ import (
 	"com.ardafirdausr.cupid/internal/entity"
 	"com.ardafirdausr.cupid/internal/entity/errs"
 	"com.ardafirdausr.cupid/internal/pkg/logger"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -24,14 +25,7 @@ func (repo *UserMongoRepository) GetUserByID(ctx context.Context, id string) (*e
 	defer cancel()
 
 	var user entity.User
-	objectID, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		logger.Log.Err(err).Msg("failed to parse object id")
-		return nil, errs.NewErrInternal("failed to parse object id")
-	}
-
-	err = repo.db.Collection("users").FindOne(timeoutCtx, primitive.M{"_id": objectID}).Decode(&user)
-	if err != nil {
+	if err := repo.db.Collection("users").FindOne(timeoutCtx, bson.M{"_id": id}).Decode(&user); err != nil {
 		if err == mongo.ErrNoDocuments {
 			return nil, errs.NewErrNotFound("user not found")
 		}
@@ -48,7 +42,7 @@ func (repo *UserMongoRepository) GetUserByEmail(ctx context.Context, email strin
 	defer cancel()
 
 	var user entity.User
-	err := repo.db.Collection("users").FindOne(timeoutCtx, primitive.M{"email": email}).Decode(&user)
+	err := repo.db.Collection("users").FindOne(timeoutCtx, bson.M{"email": email}).Decode(&user)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return nil, errs.NewErrNotFound("user not found")
@@ -66,28 +60,21 @@ func (repo *UserMongoRepository) CreateUser(ctx context.Context, user *entity.Us
 	timeoutCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
-	user.ID = primitive.NewObjectID()
+	user.ID = primitive.NewObjectID().Hex()
 	_, err := repo.db.Collection("users").InsertOne(timeoutCtx, user)
 	if err != nil {
-		logger.Log.Err(err).Msg("failed to insert user")
-		return errs.NewErrInternal("failed to insert user")
+		logger.Log.Err(err).Msg("failed to create user")
+		return errs.NewErrInternal("failed to create user")
 	}
 
-	return err
+	return nil
 }
 
 func (repo *UserMongoRepository) UpdateUserByID(ctx context.Context, id string, user *entity.User) error {
 	timeoutCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
-	objectID, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		logger.Log.Err(err).Msg("failed to parse object id")
-		return errs.NewErrInternal("failed to parse object id")
-	}
-
-	_, err = repo.db.Collection("users").UpdateOne(timeoutCtx, primitive.M{"_id": objectID}, primitive.M{"$set": user})
-	if err != nil {
+	if _, err := repo.db.Collection("users").UpdateOne(timeoutCtx, bson.M{"_id": user.Bio}, bson.M{"$set": user}); err != nil {
 		logger.Log.Err(err).Msg("failed to update user")
 		return errs.NewErrInternal("failed to update user")
 	}

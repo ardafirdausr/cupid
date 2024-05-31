@@ -20,7 +20,7 @@ func NewUserService(userRepo internal.UserRepositorier) *UserService {
 
 func (svc *UserService) UpdateUser(ctx context.Context, param dto.UpdateUserParam) (*entity.User, error) {
 	user, err := svc.userRepo.GetUserByID(ctx, param.ID)
-	if err != nil {
+	if err != nil && !errs.IsEqualType(err, errs.ErrNotFound) {
 		return nil, errors.Wrap(err, "failed to get user by ID")
 	}
 
