@@ -5,12 +5,12 @@ import (
 	"regexp"
 	"strings"
 
+	"com.ardafirdausr.cupid/internal/pkg/logger"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/rs/zerolog"
 )
 
-func DumpLogMiddleware(logger *zerolog.Logger) echo.MiddlewareFunc {
+func DumpLogMiddleware() echo.MiddlewareFunc {
 	return middleware.BodyDumpWithConfig(middleware.BodyDumpConfig{
 		Skipper: func(c echo.Context) bool {
 			skipResourceAccess := []string{".json", ".yaml", ".html", "document", "pdf", ".js", ".css"}
@@ -42,17 +42,20 @@ func DumpLogMiddleware(logger *zerolog.Logger) echo.MiddlewareFunc {
 			errorCode := c.Response().Status
 			switch {
 			case errorCode >= 200 && errorCode < 300:
-				logger.Info().
+				logger.Log.Info().
 					Interface("request", logRequest).
 					Interface("response", logResponse).
 					Msg(logMessage)
 			case errorCode > 500:
-				logger.Error().
+				logger.Log.Error().
 					Interface("request", logRequest).
 					Interface("response", logResponse).
 					Msg(logMessage)
 			default:
-				logger.Warn().Msg(logMessage)
+				logger.Log.Warn().
+					Interface("request", logRequest).
+					Interface("response", logResponse).
+					Msg(logMessage)
 			}
 		}),
 	})

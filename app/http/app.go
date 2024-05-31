@@ -8,31 +8,31 @@ import (
 	"runtime"
 	"syscall"
 
+	"com.ardafirdausr.cupid/internal/pkg/logger"
 	"github.com/rs/zerolog"
 )
 
-const port = 8000
-
 type app struct {
-	logger *zerolog.Logger
+	config config
 	srv    *httpServer
 }
 
-func InitializeApp() *app {
-	zlog := zerolog.New(os.Stdout).With().Timestamp().Logger()
-	logger := &zlog
-	logger.Info().Msg("Initializing app")
-
-	srv := newHTTPServer(port, logger)
-
-	router := newRouter()
+func newApp(
+	config config,
+	srv *httpServer,
+	router *httpRouter,
+) *app {
 	router.setupRouteOnServer(srv.echo)
-
-	return &app{logger: logger, srv: srv}
+	return &app{config: config, srv: srv}
 }
 
 func (app *app) Start() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
+
+	logger.SetLogLevel(zerolog.InfoLevel)
+	if app.config.common.Environment == "development" {
+		logger.SetLogLevel(zerolog.DebugLevel)
+	}
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -48,8 +48,8 @@ func (app *app) Start() {
 
 	go func() {
 		in := <-terminalHandler
-		msgStr := fmt.Sprintf("SYSTEM CALL: %+v", in)
-		app.logger.Info().Msg(msgStr)
+		msgStr := fmt.Sprintf("System Call: %+v", in)
+		logger.Log.Info().Msg(msgStr)
 		cancel()
 	}()
 
