@@ -3,16 +3,16 @@ package middleware
 import (
 	"fmt"
 
+	"com.ardafirdausr.cupid/internal/pkg/logger"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/rs/zerolog"
 )
 
-func RecoverMiddleware(loggy *zerolog.Logger) echo.MiddlewareFunc {
+func RecoverMiddleware() echo.MiddlewareFunc {
 	return middleware.RecoverWithConfig(middleware.RecoverConfig{
 		Skipper: middleware.DefaultSkipper,
 		LogErrorFunc: func(c echo.Context, err error, stack []byte) error {
-			loggy.Panic().
+			logger.Log.Panic().
 				Str("method", c.Request().Method).
 				Str("uri", c.Request().RequestURI).
 				Msg(fmt.Sprintf("Recovery : %s", err.Error()))

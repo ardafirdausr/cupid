@@ -5,15 +5,20 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type httpRouter struct{}
+type httpRouter struct {
+	userHandler *handler.UserHandler
+}
 
-func newRouter() *httpRouter {
-	return &httpRouter{}
+func newRouter(userHandler *handler.UserHandler) *httpRouter {
+	return &httpRouter{
+		userHandler: userHandler,
+	}
 }
 
 func (router *httpRouter) setupRouteOnServer(e *echo.Echo) {
+	versionGroup := e.Group("/v1")
 
-	// hello
-	helloHandler := handler.NewHelloHandler()
-	e.GET("/hello", helloHandler.Hello)
+	// User routes
+	userGroup := versionGroup.Group("/user")
+	userGroup.PUT("", router.userHandler.Register)
 }

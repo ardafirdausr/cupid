@@ -8,27 +8,16 @@ import (
 	"runtime"
 	"syscall"
 
-	"github.com/rs/zerolog"
+	"com.ardafirdausr.cupid/internal/pkg/logger"
 )
 
-const port = 8000
-
 type app struct {
-	logger *zerolog.Logger
-	srv    *httpServer
+	srv *httpServer
 }
 
-func InitializeApp() *app {
-	zlog := zerolog.New(os.Stdout).With().Timestamp().Logger()
-	logger := &zlog
-	logger.Info().Msg("Initializing app")
-
-	srv := newHTTPServer(port, logger)
-
-	router := newRouter()
+func newApp(srv *httpServer, router *httpRouter) *app {
 	router.setupRouteOnServer(srv.echo)
-
-	return &app{logger: logger, srv: srv}
+	return &app{srv: srv}
 }
 
 func (app *app) Start() {
@@ -48,8 +37,8 @@ func (app *app) Start() {
 
 	go func() {
 		in := <-terminalHandler
-		msgStr := fmt.Sprintf("SYSTEM CALL: %+v", in)
-		app.logger.Info().Msg(msgStr)
+		msgStr := fmt.Sprintf("System Call: %+v", in)
+		logger.Log.Info().Msg(msgStr)
 		cancel()
 	}()
 

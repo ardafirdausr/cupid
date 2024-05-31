@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"com.ardafirdausr.cupid/app/http/handler/response"
 	"com.ardafirdausr.cupid/internal/entity/errs"
 	"github.com/labstack/echo/v4"
 )
@@ -11,7 +12,7 @@ func ErrorHandler(err error, ctx echo.Context) {
 	}
 
 	message := echo.ErrInternalServerError.Message.(string)
-	response := basicResponse{
+	response := response.BasicResponse{
 		Message: message,
 		Data:    nil,
 	}

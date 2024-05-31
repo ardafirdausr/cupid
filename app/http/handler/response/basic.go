@@ -1,6 +1,6 @@
-package handler
+package response
 
-type basicResponse struct {
+type BasicResponse struct {
 	Message string      `json:"message"`
 	Data    interface{} `json:"data"`
 }
