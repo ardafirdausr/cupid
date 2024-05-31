@@ -20,6 +20,7 @@ func ErrorHandler(err error, ctx echo.Context) {
 	if he, ok := err.(*echo.HTTPError); ok {
 		response.Message = he.Message.(string)
 		ctx.JSON(he.Code, response)
+		return
 	}
 
 	response.Message = errs.GetCauserMessage(err, message)
