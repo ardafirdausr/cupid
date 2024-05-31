@@ -75,7 +75,7 @@ func (m *MockAuthServicer) EXPECT() *MockAuthServicerMockRecorder {
 }
 
 // Login mocks base method.
-func (m *MockAuthServicer) Login(ctx context.Context, param dto.LoginrUserParam) (*entity.User, string, error) {
+func (m *MockAuthServicer) Login(ctx context.Context, param dto.LoginUserParam) (*entity.User, string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Login", ctx, param)
 	ret0, _ := ret[0].(*entity.User)

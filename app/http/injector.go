@@ -5,9 +5,10 @@ package http
 import (
 	"com.ardafirdausr.cupid/app/http/handler"
 	"com.ardafirdausr.cupid/internal"
+	"com.ardafirdausr.cupid/internal/pkg/helper"
 	"com.ardafirdausr.cupid/internal/pkg/mongo"
 	"com.ardafirdausr.cupid/internal/pkg/validator"
-	repository "com.ardafirdausr.cupid/internal/repository/mongo"
+	mongoRepository "com.ardafirdausr.cupid/internal/repository/mongo"
 	"com.ardafirdausr.cupid/internal/service"
 	"github.com/google/wire"
 )
@@ -26,6 +27,7 @@ var configSet = wire.NewSet(
 var handlerSet = wire.NewSet(
 	handler.NewUserHandler,
 	handler.NewAuthHandler,
+	handler.NewMatchingHandler,
 )
 
 var serviceSet = wire.NewSet(
@@ -33,11 +35,15 @@ var serviceSet = wire.NewSet(
 	wire.Bind(new(internal.UserServicer), new(*service.UserService)),
 	service.NewAuthService,
 	wire.Bind(new(internal.AuthServicer), new(*service.AuthService)),
+	service.NewMatchingService,
+	wire.Bind(new(internal.MatchingServicer), new(*service.MatchingService)),
 )
 
 var repoSet = wire.NewSet(
-	repository.NewUserMongoRepository,
-	wire.Bind(new(internal.UserRepositorier), new(*repository.UserMongoRepository)),
+	mongoRepository.NewUserMongoRepository,
+	wire.Bind(new(internal.UserRepositorier), new(*mongoRepository.UserMongoRepository)),
+	mongoRepository.NewMatchingMongoRepository,
+	wire.Bind(new(internal.MatchingRepositorier), new(*mongoRepository.MatchingMongoRepositry)),
 )
 
 var driverSet = wire.NewSet(
@@ -47,6 +53,7 @@ var driverSet = wire.NewSet(
 var pkgSet = wire.NewSet(
 	validator.NewGoPlayValidator,
 	wire.Bind(new(validator.Validator), new(*validator.GoPlaygroundValidator)),
+	helper.Newinjector,
 )
 
 func InitializeApp() (*app, func(), error) {
