@@ -9,19 +9,30 @@ import (
 	"syscall"
 
 	"com.ardafirdausr.cupid/internal/pkg/logger"
+	"github.com/rs/zerolog"
 )
 
 type app struct {
-	srv *httpServer
+	config config
+	srv    *httpServer
 }
 
-func newApp(srv *httpServer, router *httpRouter) *app {
+func newApp(
+	config config,
+	srv *httpServer,
+	router *httpRouter,
+) *app {
 	router.setupRouteOnServer(srv.echo)
-	return &app{srv: srv}
+	return &app{config: config, srv: srv}
 }
 
 func (app *app) Start() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
+
+	logger.SetLogLevel(zerolog.InfoLevel)
+	if app.config.common.Environment == "development" {
+		logger.SetLogLevel(zerolog.DebugLevel)
+	}
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()

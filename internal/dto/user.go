@@ -7,12 +7,17 @@ import (
 	"com.ardafirdausr.cupid/internal/entity/errs"
 )
 
+type LoginrUserParam struct {
+	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"required,min=6"`
+}
+
 type RegisterUserParam struct {
 	Email     string `json:"email" validate:"required,email"`
-	Password  string `json:"password" validate:"required"`
-	Name      string `json:"username" validate:"required"`
-	Bio       string `json:"bio"`
-	BirthDate string `json:"birth_date" validate:"required,date,format=2006-01-02"`
+	Password  string `json:"password" validate:"required,min=6,max=50"`
+	Name      string `json:"name" validate:"required,min=3,max=50"`
+	Bio       string `json:"bio" validate:"omitempty,min=10,max=255"`
+	BirthDate string `json:"birth_date" validate:"required,datetime=2006-01-02"`
 	Gender    string `json:"gender" validate:"required,oneof=male female"`
 }
 
@@ -26,5 +31,24 @@ func (p *RegisterUserParam) ToUser(user *entity.User) (err error) {
 	}
 
 	user.SetPassword(p.Password)
+	return nil
+}
+
+type UpdateUserParam struct {
+	ID        string `json:"id" validate:"required"`
+	Name      string `json:"name" validate:"required,min=3,max=50"`
+	Bio       string `json:"bio" validate:"omitempty,min=10,max=255"`
+	BirthDate string `json:"birth_date" validate:"required,datetime=2006-01-02"`
+	Gender    string `json:"gender" validate:"required,oneof=male female"`
+}
+
+func (p *UpdateUserParam) ToUser(user *entity.User) (err error) {
+	user.Name = p.Name
+	user.Bio = p.Bio
+	user.Gender = entity.UserGender(p.Gender)
+	if user.BirthDate, err = time.Parse(time.DateOnly, p.BirthDate); err != nil {
+		return errs.NewErrInvalidData("birth_date", "invalid date format")
+	}
+
 	return nil
 }

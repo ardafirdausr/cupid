@@ -52,7 +52,10 @@ func DumpLogMiddleware() echo.MiddlewareFunc {
 					Interface("response", logResponse).
 					Msg(logMessage)
 			default:
-				logger.Log.Warn().Msg(logMessage)
+				logger.Log.Warn().
+					Interface("request", logRequest).
+					Interface("response", logResponse).
+					Msg(logMessage)
 			}
 		}),
 	})

@@ -24,7 +24,3 @@ func SetLogLevel(level zerolog.Level) {
 func SetOutput(output *os.File) {
 	Log = Log.Output(output)
 }
-
-func SetFormat(format string) {
-	Log = Log.Output(zerolog.ConsoleWriter{Out: os.Stdout})
-}

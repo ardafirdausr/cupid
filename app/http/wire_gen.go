@@ -10,6 +10,7 @@ import (
 	"com.ardafirdausr.cupid/app/http/handler"
 	"com.ardafirdausr.cupid/internal"
 	"com.ardafirdausr.cupid/internal/pkg/mongo"
+	"com.ardafirdausr.cupid/internal/pkg/validator"
 	"com.ardafirdausr.cupid/internal/repository/mongo"
 	"com.ardafirdausr.cupid/internal/service"
 	"github.com/google/wire"
@@ -31,9 +32,13 @@ func InitializeApp() (*app, func(), error) {
 	}
 	userMongoRepository := repository.NewUserMongoRepository(database)
 	userService := service.NewUserService(userMongoRepository)
-	userHandler := handler.NewUserHandler(userService)
-	httpHttpRouter := newRouter(userHandler)
-	httpApp := newApp(httpHttpServer, httpHttpRouter)
+	goPlaygroundValidator := validator.NewGoPlayValidator()
+	userHandler := handler.NewUserHandler(userService, goPlaygroundValidator)
+	commonConfig := config2.common
+	authService := service.NewAuthService(commonConfig, userMongoRepository)
+	authHandler := handler.NewAuthHandler(authService, goPlaygroundValidator)
+	httpHttpRouter := newRouter(userHandler, authHandler)
+	httpApp := newApp(config2, httpHttpServer, httpHttpRouter)
 	return httpApp, func() {
 		cleanup()
 	}, nil
@@ -54,10 +59,12 @@ var configSet = wire.NewSet(wire.Value(cfg), wire.FieldsOf(
 	"mongo"),
 )
 
-var handlerSet = wire.NewSet(handler.NewUserHandler)
+var handlerSet = wire.NewSet(handler.NewUserHandler, handler.NewAuthHandler)
 
-var serviceSet = wire.NewSet(wire.Bind(new(internal.UserServicer), new(*service.UserService)), service.NewUserService)
+var serviceSet = wire.NewSet(service.NewUserService, wire.Bind(new(internal.UserServicer), new(*service.UserService)), service.NewAuthService, wire.Bind(new(internal.AuthServicer), new(*service.AuthService)))
 
-var repoSet = wire.NewSet(wire.Bind(new(internal.UserRepositorier), new(*repository.UserMongoRepository)), repository.NewUserMongoRepository)
+var repoSet = wire.NewSet(repository.NewUserMongoRepository, wire.Bind(new(internal.UserRepositorier), new(*repository.UserMongoRepository)))
 
 var driverSet = wire.NewSet(mongo.NewMongoDatabase)
+
+var pkgSet = wire.NewSet(validator.NewGoPlayValidator, wire.Bind(new(validator.Validator), new(*validator.GoPlaygroundValidator)))

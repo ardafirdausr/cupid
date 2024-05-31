@@ -15,7 +15,7 @@ type config struct {
 }
 
 func loadConfig() config {
-	viper.SetConfigFile("./app/http/config/.env")
+	viper.SetConfigFile("./app/http/.env")
 
 	viper.ReadInConfig()
 

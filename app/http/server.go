@@ -25,12 +25,12 @@ func newHTTPServer(config httpConfig) (*httpServer, error) {
 	e := echo.New()
 	e.HideBanner = true
 	e.HidePort = true
-	e.HTTPErrorHandler = handler.ErrorHandler
 	e.Use(mid.CORSMiddleware())
 	e.Use(mid.DumpLogMiddleware())
 	e.Use(mid.TimeoutMiddleware(config.timeout))
 	e.Use(mid.RecoverMiddleware())
 	srv := &httpServer{echo: e, config: config}
+	e.HTTPErrorHandler = handler.ErrorHandler
 	return srv, nil
 }
 
