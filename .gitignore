@@ -1,3 +1,4 @@
 __debug_bin*
 .vscode
+.DS_STORE
 **/*.env
