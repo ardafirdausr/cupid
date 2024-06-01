@@ -110,7 +110,7 @@ func (svc *MatchingService) MatchMaking(ctx context.Context, param dto.CreateMat
 }
 
 func (svc *MatchingService) isUserAbleToMakeMatchMaking(ctx context.Context, user *entity.User) (bool, error) {
-	acceptedCount, err := svc.matchingRepo.GetUserAcceptedCount(ctx, user.ID, time.Now())
+	acceptedCount, err := svc.matchingRepo.GetUserMatchingCount(ctx, user.ID, time.Now())
 	if err != nil {
 		return false, errors.Wrap(err, "failed to get user accepted count")
 	}

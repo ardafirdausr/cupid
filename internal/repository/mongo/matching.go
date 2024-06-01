@@ -21,7 +21,7 @@ func NewMatchingMongoRepository(db *mongo.Database) *MatchingMongoRepositry {
 	return &MatchingMongoRepositry{db: db}
 }
 
-func (repo *MatchingMongoRepositry) GetUserAcceptedCount(ctx context.Context, userID string, date time.Time) (uint64, error) {
+func (repo *MatchingMongoRepositry) GetUserMatchingCount(ctx context.Context, userID string, date time.Time) (uint64, error) {
 	timeoutCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
