@@ -144,21 +144,6 @@ func (m *MockMatchingServicer) EXPECT() *MockMatchingServicerMockRecorder {
 	return m.recorder
 }
 
-// CreateMatching mocks base method.
-func (m *MockMatchingServicer) CreateMatching(ctx context.Context, param dto.CreateMatchingParam) (*entity.Matching, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateMatching", ctx, param)
-	ret0, _ := ret[0].(*entity.Matching)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// CreateMatching indicates an expected call of CreateMatching.
-func (mr *MockMatchingServicerMockRecorder) CreateMatching(ctx, param interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateMatching", reflect.TypeOf((*MockMatchingServicer)(nil).CreateMatching), ctx, param)
-}
-
 // GetMatchingRecommendations mocks base method.
 func (m *MockMatchingServicer) GetMatchingRecommendations(ctx context.Context, filter dto.MatchingRecommendationsFilter) ([]entity.User, error) {
 	m.ctrl.T.Helper()
@@ -172,4 +157,87 @@ func (m *MockMatchingServicer) GetMatchingRecommendations(ctx context.Context, f
 func (mr *MockMatchingServicerMockRecorder) GetMatchingRecommendations(ctx, filter interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMatchingRecommendations", reflect.TypeOf((*MockMatchingServicer)(nil).GetMatchingRecommendations), ctx, filter)
+}
+
+// MatchMaking mocks base method.
+func (m *MockMatchingServicer) MatchMaking(ctx context.Context, param dto.CreateMatchingParam) (*entity.Matching, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "MatchMaking", ctx, param)
+	ret0, _ := ret[0].(*entity.Matching)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// MatchMaking indicates an expected call of MatchMaking.
+func (mr *MockMatchingServicerMockRecorder) MatchMaking(ctx, param interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MatchMaking", reflect.TypeOf((*MockMatchingServicer)(nil).MatchMaking), ctx, param)
+}
+
+// MockSubscriptionServicer is a mock of SubscriptionServicer interface.
+type MockSubscriptionServicer struct {
+	ctrl     *gomock.Controller
+	recorder *MockSubscriptionServicerMockRecorder
+}
+
+// MockSubscriptionServicerMockRecorder is the mock recorder for MockSubscriptionServicer.
+type MockSubscriptionServicerMockRecorder struct {
+	mock *MockSubscriptionServicer
+}
+
+// NewMockSubscriptionServicer creates a new mock instance.
+func NewMockSubscriptionServicer(ctrl *gomock.Controller) *MockSubscriptionServicer {
+	mock := &MockSubscriptionServicer{ctrl: ctrl}
+	mock.recorder = &MockSubscriptionServicerMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockSubscriptionServicer) EXPECT() *MockSubscriptionServicerMockRecorder {
+	return m.recorder
+}
+
+// CreateUserSubscription mocks base method.
+func (m *MockSubscriptionServicer) CreateUserSubscription(ctx context.Context, param dto.CreateUserSubscriptionParam) (*entity.UserSubscription, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateUserSubscription", ctx, param)
+	ret0, _ := ret[0].(*entity.UserSubscription)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateUserSubscription indicates an expected call of CreateUserSubscription.
+func (mr *MockSubscriptionServicerMockRecorder) CreateUserSubscription(ctx, param interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateUserSubscription", reflect.TypeOf((*MockSubscriptionServicer)(nil).CreateUserSubscription), ctx, param)
+}
+
+// GetActiveUserSubscription mocks base method.
+func (m *MockSubscriptionServicer) GetActiveUserSubscription(ctx context.Context) (*entity.UserSubscription, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetActiveUserSubscription", ctx)
+	ret0, _ := ret[0].(*entity.UserSubscription)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetActiveUserSubscription indicates an expected call of GetActiveUserSubscription.
+func (mr *MockSubscriptionServicerMockRecorder) GetActiveUserSubscription(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetActiveUserSubscription", reflect.TypeOf((*MockSubscriptionServicer)(nil).GetActiveUserSubscription), ctx)
+}
+
+// GetAllSubscriptions mocks base method.
+func (m *MockSubscriptionServicer) GetAllSubscriptions(ctx context.Context) ([]entity.Subscription, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAllSubscriptions", ctx)
+	ret0, _ := ret[0].([]entity.Subscription)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetAllSubscriptions indicates an expected call of GetAllSubscriptions.
+func (mr *MockSubscriptionServicerMockRecorder) GetAllSubscriptions(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllSubscriptions", reflect.TypeOf((*MockSubscriptionServicer)(nil).GetAllSubscriptions), ctx)
 }
