@@ -40,7 +40,8 @@ func (router *httpRouter) setupRouteOnServer(e *echo.Echo) {
 	userGroup.PUT("/:ID", router.userHandler.Update)
 
 	// User subscription routes
-	userSubscriptionGroup := userGroup.Group(":userID/subscriptions")
+	userSubscriptionGroup := userGroup.Group("/:userID/subscription")
+	userSubscriptionGroup.GET("", router.subscriptionHandler.GetUserSubscription)
 	userSubscriptionGroup.POST("", router.subscriptionHandler.CreateUserSubscription)
 
 	// Auth routes

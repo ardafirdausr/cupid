@@ -8,6 +8,7 @@ import (
 	"com.ardafirdausr.cupid/internal/entity/errs"
 	"com.ardafirdausr.cupid/internal/pkg/logger"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -83,5 +84,14 @@ func (repo *SubscriptionRepository) GetActiveUserSubscriptionByUserID(ctx contex
 }
 
 func (repo *SubscriptionRepository) CreateUserSubscription(ctx context.Context, subscription *entity.UserSubscription) error {
+	timeoutCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
+	subscription.ID = primitive.NewObjectID().Hex()
+	if _, err := repo.DB.Collection("user_subscriptions").InsertOne(timeoutCtx, subscription); err != nil {
+		logger.Log.Err(err).Msg("failed to create user subscription")
+		return errs.NewErrInternal("failed to create user subscription")
+	}
+
 	return nil
 }

@@ -56,6 +56,9 @@ func (service *SubscriptionServicer) GetActiveUserSubscription(ctx context.Conte
 	userSubscription.UserID = user.ID
 	userSubscription.SubscriptionID = freeSubscription.ID.String()
 	userSubscription.SubscriptionFeature = freeSubscription.Features
+	if err := service.subscriptionRepo.CreateUserSubscription(ctx, &userSubscription); err != nil {
+		return nil, errors.Wrap(err, "failed to create user subscription")
+	}
 
 	return &userSubscription, nil
 }

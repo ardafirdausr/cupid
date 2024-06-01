@@ -48,13 +48,13 @@ func (handler *UserHandler) Update(ctx echo.Context) error {
 	}
 
 	param.ID = ctx.Param("ID")
-	if param.ID != reqUser.ID {
-		return errs.NewErrForbidden("forbidden to update other user")
-	}
-
 	if mapErr, err := handler.validator.ValidateStruct(param); err != nil {
 		logger.Log.Err(err).Msg("failed to validate request body")
 		return ctx.JSON(http.StatusBadRequest, response.BasicErrorResponse{Message: "invalid request body", Errors: mapErr})
+	}
+
+	if param.ID != reqUser.ID {
+		return errs.NewErrForbidden("forbidden to update other user")
 	}
 
 	user, err := handler.userService.UpdateUser(ctx.Request().Context(), param)

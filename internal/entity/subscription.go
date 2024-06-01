@@ -50,7 +50,7 @@ type UserSubscription struct {
 	UserID              string              `json:"user_id" bson:"userID"`
 	SubscriptionID      string              `json:"subscription_id" bson:"subscriptionID"`
 	SubscriptionFeature SubscriptionFeature `json:"subscription_feature" bson:"subscriptionFeature"`
-	PaymentCode         string              `json:"paid_code" bson:"paidCode"`
-	PaidAt              time.Time           `json:"paid_at" bson:"paidAt"`
-	ExpiredAt           time.Time           `json:"expired_at" bson:"expiredAt"`
+	PaymentCode         string              `json:"paid_code,omitempty" bson:"paidCode"`
+	PaidAt              time.Time           `json:"paid_at,omitempty" bson:"paidAt"`
+	ExpiredAt           time.Time           `json:"expired_at,omitempty" bson:"expiredAt"`
 }

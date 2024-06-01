@@ -59,12 +59,12 @@ func (handler *SubscriptionHandler) CreateUserSubscription(ctx echo.Context) err
 	}
 
 	param.UserID = ctx.Param("userID")
-	if param.UserID != reqUser.ID {
-		return errs.NewErrForbidden("forbidden to update other user")
-	}
-
 	if mapErr, err := handler.validator.ValidateStruct(param); err != nil {
 		return ctx.JSON(http.StatusBadRequest, response.BasicErrorResponse{Message: "invalid request body", Errors: mapErr})
+	}
+
+	if param.UserID != reqUser.ID {
+		return errs.NewErrForbidden("forbidden to update other user")
 	}
 
 	userSubscription, err := handler.subscriptionService.CreateUserSubscription(reqCtx, param)
@@ -73,6 +73,23 @@ func (handler *SubscriptionHandler) CreateUserSubscription(ctx echo.Context) err
 	}
 
 	return ctx.JSON(http.StatusCreated, response.BasicResponse{
+		Message: "success",
+		Data:    userSubscription,
+	})
+}
+
+func (handler *SubscriptionHandler) GetUserSubscription(ctx echo.Context) error {
+	reqCtx, err := handler.jwtHelper.InjectUserFromJWT(ctx.Request().Context(), ctx.Get("user"))
+	if err != nil {
+		return err
+	}
+
+	userSubscription, err := handler.subscriptionService.GetActiveUserSubscription(reqCtx)
+	if err != nil {
+		return err
+	}
+
+	return ctx.JSON(http.StatusOK, response.BasicResponse{
 		Message: "success",
 		Data:    userSubscription,
 	})
