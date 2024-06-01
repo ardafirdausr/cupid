@@ -20,5 +20,5 @@ type AuthServicer interface {
 
 type MatchingServicer interface {
 	GetMatchingRecommendations(ctx context.Context, filter dto.MatchingRecommendationsFilter) ([]entity.User, error)
-	CreateMatching(ctx context.Context, param dto.CreateMatchingParam) (*entity.Matching, error)
+	MatchMaking(ctx context.Context, param dto.CreateMatchingParam) (*entity.Matching, error)
 }

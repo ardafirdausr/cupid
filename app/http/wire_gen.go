@@ -39,9 +39,9 @@ func InitializeApp() (*app, func(), error) {
 	authService := service.NewAuthService(commonConfig, userMongoRepository)
 	authHandler := handler.NewAuthHandler(authService, goPlaygroundValidator)
 	matchingMongoRepositry := mongo2.NewMatchingMongoRepository(database)
-	matchingService := service.NewMatchingService(matchingMongoRepositry)
+	matchingService := service.NewMatchingService(matchingMongoRepositry, userMongoRepository)
 	helper := jwt.NewHelper(userService)
-	matchingHandler := handler.NewMatchingHandler(matchingService, helper)
+	matchingHandler := handler.NewMatchingHandler(matchingService, goPlaygroundValidator, helper)
 	httpHttpRouter := newRouter(commonConfig, userHandler, authHandler, matchingHandler)
 	httpApp := newApp(config2, httpHttpServer, httpHttpRouter)
 	return httpApp, func() {

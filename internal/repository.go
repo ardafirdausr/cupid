@@ -3,6 +3,7 @@ package internal
 
 import (
 	"context"
+	"time"
 
 	"com.ardafirdausr.cupid/internal/dto"
 	"com.ardafirdausr.cupid/internal/entity"
@@ -17,5 +18,8 @@ type UserRepositorier interface {
 
 type MatchingRepositorier interface {
 	GetMatchingRecommendations(ctx context.Context, filter dto.MatchingRecommendationsFilter) ([]entity.User, error)
+	GetUserAcceptedCount(ctx context.Context, userID string, date time.Time) (uint64, error)
+	GetMatchingByUser(ctx context.Context, user1ID, user2ID string) (*entity.Matching, error)
 	CreateMatching(ctx context.Context, matching *entity.Matching) error
+	UpdateMatchingByID(ctx context.Context, matchingID string, matching *entity.Matching) error
 }

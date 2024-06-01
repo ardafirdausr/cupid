@@ -45,5 +45,6 @@ func (router *httpRouter) setupRouteOnServer(e *echo.Echo) {
 	matchingGroup := versionGroup.Group("/matchings")
 	matchingGroup.Use(middleware.JWTMiddleware(router.config.JWTSecretKey))
 	matchingGroup.GET("", router.matchingHandler.GetMatchingRecommendations)
+	matchingGroup.POST("", router.matchingHandler.CreateMatching)
 
 }
