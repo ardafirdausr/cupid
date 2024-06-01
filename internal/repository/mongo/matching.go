@@ -13,15 +13,15 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-type MatchingMongoRepositry struct {
+type MatchingRepository struct {
 	db *mongo.Database
 }
 
-func NewMatchingMongoRepository(db *mongo.Database) *MatchingMongoRepositry {
-	return &MatchingMongoRepositry{db: db}
+func NewMatchingRepository(db *mongo.Database) *MatchingRepository {
+	return &MatchingRepository{db: db}
 }
 
-func (repo *MatchingMongoRepositry) GetUserMatchingCount(ctx context.Context, userID string, date time.Time) (uint64, error) {
+func (repo *MatchingRepository) GetUserMatchingCount(ctx context.Context, userID string, date time.Time) (uint64, error) {
 	timeoutCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
@@ -69,7 +69,7 @@ func (repo *MatchingMongoRepositry) GetUserMatchingCount(ctx context.Context, us
 	return result.Count, nil
 }
 
-func (repo *MatchingMongoRepositry) GetMatchingRecommendations(ctx context.Context, filter dto.MatchingRecommendationsFilter) ([]entity.User, error) {
+func (repo *MatchingRepository) GetMatchingRecommendations(ctx context.Context, filter dto.MatchingRecommendationsFilter) ([]entity.User, error) {
 	timeoutCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 
@@ -143,7 +143,7 @@ func (repo *MatchingMongoRepositry) GetMatchingRecommendations(ctx context.Conte
 	return users, nil
 }
 
-func (repo *MatchingMongoRepositry) GetMatchingByUser(ctx context.Context, user1ID, user2ID string) (*entity.Matching, error) {
+func (repo *MatchingRepository) GetMatchingByUser(ctx context.Context, user1ID, user2ID string) (*entity.Matching, error) {
 	timeoutCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
@@ -167,7 +167,7 @@ func (repo *MatchingMongoRepositry) GetMatchingByUser(ctx context.Context, user1
 	return &matching, nil
 }
 
-func (repo *MatchingMongoRepositry) CreateMatching(ctx context.Context, matching *entity.Matching) error {
+func (repo *MatchingRepository) CreateMatching(ctx context.Context, matching *entity.Matching) error {
 	timeoutCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
@@ -180,7 +180,7 @@ func (repo *MatchingMongoRepositry) CreateMatching(ctx context.Context, matching
 	return nil
 }
 
-func (repo *MatchingMongoRepositry) UpdateMatchingByID(ctx context.Context, matchingID string, matching *entity.Matching) error {
+func (repo *MatchingRepository) UpdateMatchingByID(ctx context.Context, matchingID string, matching *entity.Matching) error {
 	timeoutCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 

@@ -9,7 +9,7 @@ package http
 import (
 	"com.ardafirdausr.cupid/app/http/handler"
 	"com.ardafirdausr.cupid/internal"
-	"com.ardafirdausr.cupid/internal/pkg/jwt"
+	"com.ardafirdausr.cupid/internal/helper"
 	"com.ardafirdausr.cupid/internal/pkg/mongo"
 	"com.ardafirdausr.cupid/internal/pkg/validator"
 	mongo2 "com.ardafirdausr.cupid/internal/repository/mongo"
@@ -32,18 +32,21 @@ func InitializeApp() (*app, func(), error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	userMongoRepository := mongo2.NewUserMongoRepository(database)
-	userService := service.NewUserService(userMongoRepository)
+	userRepository := mongo2.NewUserRepository(database)
+	userService := service.NewUserService(userRepository)
+	subscriptionRepository := mongo2.NewSubscriptionRepository(database)
+	subscriptionServicer := service.NewSubscriptionService(subscriptionRepository)
+	contextInjector := helper.NewContextInjector(userService, subscriptionServicer)
 	goPlaygroundValidator := validator.NewGoPlayValidator()
-	userHandler := handler.NewUserHandler(userService, goPlaygroundValidator)
-	authService := service.NewAuthService(commonConfig, userMongoRepository)
+	userHandler := handler.NewUserHandler(userService, contextInjector, goPlaygroundValidator)
+	authService := service.NewAuthService(commonConfig, userRepository)
 	authHandler := handler.NewAuthHandler(authService, goPlaygroundValidator)
-	matchingMongoRepositry := mongo2.NewMatchingMongoRepository(database)
-	matchingService := service.NewMatchingService(matchingMongoRepositry, userMongoRepository)
-	helper := jwt.NewHelper(userService)
-	matchingHandler := handler.NewMatchingHandler(matchingService, goPlaygroundValidator, helper)
-	httpHttpRouter := newRouter(commonConfig, userHandler, authHandler, matchingHandler)
-	httpApp := newApp(config2, httpHttpServer, httpHttpRouter)
+	matchingRepository := mongo2.NewMatchingRepository(database)
+	matchingService := service.NewMatchingService(matchingRepository, userRepository)
+	matchingHandler := handler.NewMatchingHandler(matchingService, goPlaygroundValidator, contextInjector)
+	subscriptionHandler := handler.NewSubscriptionHandler(subscriptionServicer, goPlaygroundValidator, contextInjector)
+	httpHttpRouter := newRouter(commonConfig, userHandler, authHandler, matchingHandler, subscriptionHandler)
+	httpApp := newApp(config2, httpHttpServer, httpHttpRouter, database)
 	return httpApp, func() {
 		cleanup()
 	}, nil
@@ -64,12 +67,14 @@ var configSet = wire.NewSet(wire.Value(cfg), wire.FieldsOf(
 	"mongo"),
 )
 
-var handlerSet = wire.NewSet(handler.NewUserHandler, handler.NewAuthHandler, handler.NewMatchingHandler)
+var handlerSet = wire.NewSet(handler.NewUserHandler, handler.NewAuthHandler, handler.NewMatchingHandler, handler.NewSubscriptionHandler)
 
-var serviceSet = wire.NewSet(service.NewUserService, wire.Bind(new(internal.UserServicer), new(*service.UserService)), service.NewAuthService, wire.Bind(new(internal.AuthServicer), new(*service.AuthService)), service.NewMatchingService, wire.Bind(new(internal.MatchingServicer), new(*service.MatchingService)))
+var serviceSet = wire.NewSet(service.NewUserService, wire.Bind(new(internal.UserServicer), new(*service.UserService)), service.NewAuthService, wire.Bind(new(internal.AuthServicer), new(*service.AuthService)), service.NewMatchingService, wire.Bind(new(internal.MatchingServicer), new(*service.MatchingService)), service.NewSubscriptionService, wire.Bind(new(internal.SubscriptionServicer), new(*service.SubscriptionServicer)))
 
-var repoSet = wire.NewSet(mongo2.NewUserMongoRepository, wire.Bind(new(internal.UserRepositorier), new(*mongo2.UserMongoRepository)), mongo2.NewMatchingMongoRepository, wire.Bind(new(internal.MatchingRepositorier), new(*mongo2.MatchingMongoRepositry)))
+var repoSet = wire.NewSet(mongo2.NewUserRepository, wire.Bind(new(internal.UserRepositorier), new(*mongo2.UserRepository)), mongo2.NewMatchingRepository, wire.Bind(new(internal.MatchingRepositorier), new(*mongo2.MatchingRepository)), mongo2.NewSubscriptionRepository, wire.Bind(new(internal.SubscriptionRepositorier), new(*mongo2.SubscriptionRepository)))
+
+var helperSet = wire.NewSet(helper.NewContextInjector)
 
 var driverSet = wire.NewSet(mongo.NewMongoDatabase)
 
-var pkgSet = wire.NewSet(validator.NewGoPlayValidator, wire.Bind(new(validator.Validator), new(*validator.GoPlaygroundValidator)), jwt.NewHelper)
+var pkgSet = wire.NewSet(validator.NewGoPlayValidator, wire.Bind(new(validator.Validator), new(*validator.GoPlaygroundValidator)))

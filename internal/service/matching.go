@@ -8,7 +8,7 @@ import (
 	"com.ardafirdausr.cupid/internal/dto"
 	"com.ardafirdausr.cupid/internal/entity"
 	"com.ardafirdausr.cupid/internal/entity/errs"
-	customJWT "com.ardafirdausr.cupid/internal/pkg/jwt"
+	"com.ardafirdausr.cupid/internal/helper"
 	"github.com/pkg/errors"
 )
 
@@ -32,7 +32,7 @@ func (svc *MatchingService) GetMatchingRecommendations(ctx context.Context, filt
 }
 
 func (svc *MatchingService) MatchMaking(ctx context.Context, param dto.CreateMatchingParam) (*entity.Matching, error) {
-	user, err := customJWT.GetUserFromContext(ctx)
+	user, err := helper.GetUserFromContext(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get user from context")
 	}
@@ -110,12 +110,17 @@ func (svc *MatchingService) MatchMaking(ctx context.Context, param dto.CreateMat
 }
 
 func (svc *MatchingService) isUserAbleToMakeMatchMaking(ctx context.Context, user *entity.User) (bool, error) {
+	userSubscription, err := helper.GetSubscriptionFromContext(ctx)
+	if err != nil || userSubscription == nil {
+		return false, errs.NewErrUnprocessable("user has no subscription")
+	}
+
 	acceptedCount, err := svc.matchingRepo.GetUserMatchingCount(ctx, user.ID, time.Now())
 	if err != nil {
 		return false, errors.Wrap(err, "failed to get user accepted count")
 	}
 
-	if acceptedCount >= 10 {
+	if userSubscription.SubscriptionFeature.MaxSwipe > 0 && acceptedCount >= uint64(userSubscription.SubscriptionFeature.MaxSwipe) {
 		return false, errs.NewErrUnprocessable("user has reached maximum accepted count")
 	}
 

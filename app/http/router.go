@@ -8,10 +8,11 @@ import (
 )
 
 type httpRouter struct {
-	config          entity.CommonConfig
-	userHandler     *handler.UserHandler
-	authHandler     *handler.AuthHandler
-	matchingHandler *handler.MatchingHandler
+	config              entity.CommonConfig
+	userHandler         *handler.UserHandler
+	authHandler         *handler.AuthHandler
+	matchingHandler     *handler.MatchingHandler
+	subscriptionHandler *handler.SubscriptionHandler
 }
 
 func newRouter(
@@ -19,12 +20,14 @@ func newRouter(
 	userHandler *handler.UserHandler,
 	authHandler *handler.AuthHandler,
 	matchingHandler *handler.MatchingHandler,
+	subscriptionHandler *handler.SubscriptionHandler,
 ) *httpRouter {
 	return &httpRouter{
-		config:          config,
-		userHandler:     userHandler,
-		authHandler:     authHandler,
-		matchingHandler: matchingHandler,
+		config:              config,
+		userHandler:         userHandler,
+		authHandler:         authHandler,
+		matchingHandler:     matchingHandler,
+		subscriptionHandler: subscriptionHandler,
 	}
 }
 
@@ -34,7 +37,12 @@ func (router *httpRouter) setupRouteOnServer(e *echo.Echo) {
 	// User routes
 	userGroup := versionGroup.Group("/users")
 	userGroup.Use(middleware.JWTMiddleware(router.config.JWTSecretKey))
-	userGroup.PUT("/:id", router.userHandler.Update)
+	userGroup.PUT("/:ID", router.userHandler.Update)
+
+	// User subscription routes
+	userSubscriptionGroup := userGroup.Group("/:userID/subscription")
+	userSubscriptionGroup.GET("", router.subscriptionHandler.GetUserSubscription)
+	userSubscriptionGroup.POST("", router.subscriptionHandler.CreateUserSubscription)
 
 	// Auth routes
 	authGroup := versionGroup.Group("/auth")
@@ -47,4 +55,7 @@ func (router *httpRouter) setupRouteOnServer(e *echo.Echo) {
 	matchingGroup.GET("", router.matchingHandler.GetMatchingRecommendations)
 	matchingGroup.POST("", router.matchingHandler.CreateMatching)
 
+	// Subscription plan routes
+	subscriptionGroup := versionGroup.Group("/subscriptions")
+	subscriptionGroup.GET("", router.subscriptionHandler.GetSubscriptions)
 }

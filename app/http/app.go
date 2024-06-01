@@ -7,23 +7,37 @@ import (
 	"os/signal"
 	"runtime"
 	"syscall"
+	"time"
 
 	"com.ardafirdausr.cupid/internal/pkg/logger"
+	"com.ardafirdausr.cupid/internal/repository/mongo/seed"
 	"github.com/rs/zerolog"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type app struct {
-	config config
-	srv    *httpServer
+	config  config
+	srv     *httpServer
+	mongoDB *mongo.Database
 }
 
 func newApp(
 	config config,
 	srv *httpServer,
 	router *httpRouter,
+	mongoDB *mongo.Database,
 ) *app {
 	router.setupRouteOnServer(srv.echo)
-	return &app{config: config, srv: srv}
+	return &app{config: config, srv: srv, mongoDB: mongoDB}
+}
+
+func (app *app) setupDatabase() {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	seed.SetupUserCollection(ctx, app.mongoDB)
+	seed.SetupMatchingCollection(ctx, app.mongoDB)
+	seed.SetupSubscriptionPlanCollection(ctx, app.mongoDB)
 }
 
 func (app *app) Start() {
@@ -53,6 +67,7 @@ func (app *app) Start() {
 		cancel()
 	}()
 
+	app.setupDatabase()
 	app.srv.start()
 	defer app.srv.close()
 	<-ctx.Done()
