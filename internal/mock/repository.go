@@ -8,6 +8,7 @@ import (
 	context "context"
 	reflect "reflect"
 
+	dto "com.ardafirdausr.cupid/internal/dto"
 	entity "com.ardafirdausr.cupid/internal/entity"
 	gomock "github.com/golang/mock/gomock"
 )
@@ -91,4 +92,56 @@ func (m *MockUserRepositorier) UpdateUserByID(ctx context.Context, id string, us
 func (mr *MockUserRepositorierMockRecorder) UpdateUserByID(ctx, id, user interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateUserByID", reflect.TypeOf((*MockUserRepositorier)(nil).UpdateUserByID), ctx, id, user)
+}
+
+// MockMatchingRepositorier is a mock of MatchingRepositorier interface.
+type MockMatchingRepositorier struct {
+	ctrl     *gomock.Controller
+	recorder *MockMatchingRepositorierMockRecorder
+}
+
+// MockMatchingRepositorierMockRecorder is the mock recorder for MockMatchingRepositorier.
+type MockMatchingRepositorierMockRecorder struct {
+	mock *MockMatchingRepositorier
+}
+
+// NewMockMatchingRepositorier creates a new mock instance.
+func NewMockMatchingRepositorier(ctrl *gomock.Controller) *MockMatchingRepositorier {
+	mock := &MockMatchingRepositorier{ctrl: ctrl}
+	mock.recorder = &MockMatchingRepositorierMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockMatchingRepositorier) EXPECT() *MockMatchingRepositorierMockRecorder {
+	return m.recorder
+}
+
+// CreateMatching mocks base method.
+func (m *MockMatchingRepositorier) CreateMatching(ctx context.Context, matching *entity.Matching) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateMatching", ctx, matching)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreateMatching indicates an expected call of CreateMatching.
+func (mr *MockMatchingRepositorierMockRecorder) CreateMatching(ctx, matching interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateMatching", reflect.TypeOf((*MockMatchingRepositorier)(nil).CreateMatching), ctx, matching)
+}
+
+// GetMatchingRecommendations mocks base method.
+func (m *MockMatchingRepositorier) GetMatchingRecommendations(ctx context.Context, filter dto.MatchingRecommendationsFilter) ([]entity.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetMatchingRecommendations", ctx, filter)
+	ret0, _ := ret[0].([]entity.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetMatchingRecommendations indicates an expected call of GetMatchingRecommendations.
+func (mr *MockMatchingRepositorierMockRecorder) GetMatchingRecommendations(ctx, filter interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMatchingRecommendations", reflect.TypeOf((*MockMatchingRepositorier)(nil).GetMatchingRecommendations), ctx, filter)
 }

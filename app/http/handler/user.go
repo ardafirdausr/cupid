@@ -32,7 +32,6 @@ func (handler *UserHandler) Update(ctx echo.Context) error {
 	}
 
 	param.ID = ctx.Param("id")
-
 	if mapErr, err := handler.validator.ValidateStruct(param); err != nil {
 		logger.Log.Err(err).Msg("failed to validate request body")
 		return ctx.JSON(http.StatusBadRequest, response.BasicErrorResponse{Message: "invalid request body", Errors: mapErr})

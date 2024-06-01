@@ -48,7 +48,7 @@ func (handler *AuthHandler) Register(ctx echo.Context) error {
 }
 
 func (handler *AuthHandler) Login(ctx echo.Context) error {
-	var param dto.LoginrUserParam
+	var param dto.LoginUserParam
 	if err := ctx.Bind(&param); err != nil {
 		logger.Log.Err(err).Msg("failed to bind request body")
 		return errs.NewErrInvalidData("invalid request body")

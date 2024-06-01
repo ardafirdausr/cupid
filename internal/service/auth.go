@@ -8,7 +8,7 @@ import (
 	"com.ardafirdausr.cupid/internal/dto"
 	"com.ardafirdausr.cupid/internal/entity"
 	"com.ardafirdausr.cupid/internal/entity/errs"
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/pkg/errors"
 )
 
@@ -43,7 +43,7 @@ func (svc AuthService) Register(ctx context.Context, param dto.RegisterUserParam
 	return user, token, nil
 }
 
-func (svc AuthService) Login(ctx context.Context, param dto.LoginrUserParam) (*entity.User, string, error) {
+func (svc AuthService) Login(ctx context.Context, param dto.LoginUserParam) (*entity.User, string, error) {
 	user, err := svc.userRepo.GetUserByEmail(ctx, param.Email)
 	if err != nil && !errs.IsEqualType(err, errs.ErrNotFound) {
 		return nil, "", errors.Wrap(err, "failed to get user by email")
@@ -66,11 +66,14 @@ func (svc AuthService) Login(ctx context.Context, param dto.LoginrUserParam) (*e
 }
 
 func (svc AuthService) generateAuthToken(user *entity.User) (string, error) {
+	now := time.Now()
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"sub":   user.ID,
-		"iat":   jwt.TimeFunc().Unix(),
-		"exp":   jwt.TimeFunc().Add(2 * time.Hour).Unix(),
+		"iat":   now.Unix(),
+		"exp":   now.Add(2 * time.Hour).Unix(),
+		"id":    user.ID,
 		"email": user.Email,
+		"name":  user.Name,
 	})
 
 	tokenString, err := token.SignedString([]byte(svc.config.JWTSecretKey))

@@ -39,7 +39,11 @@ func loadCommonConfig() entity.CommonConfig {
 		env = "production"
 	}
 
-	return entity.CommonConfig{AppName: appName}
+	return entity.CommonConfig{
+		AppName:      appName,
+		Environment:  env,
+		JWTSecretKey: viper.GetString("JWT_SECRET_KEY"),
+	}
 }
 
 func loadHTTPConfig() httpConfig {
