@@ -43,7 +43,7 @@ func InitializeApp() (*app, func(), error) {
 	helper := jwt.NewHelper(userService)
 	matchingHandler := handler.NewMatchingHandler(matchingService, goPlaygroundValidator, helper)
 	httpHttpRouter := newRouter(commonConfig, userHandler, authHandler, matchingHandler)
-	httpApp := newApp(config2, httpHttpServer, httpHttpRouter)
+	httpApp := newApp(config2, httpHttpServer, httpHttpRouter, database)
 	return httpApp, func() {
 		cleanup()
 	}, nil
