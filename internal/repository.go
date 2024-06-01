@@ -26,4 +26,7 @@ type MatchingRepositorier interface {
 
 type SubscriptionRepositorier interface {
 	GetAllSubscriptions(ctx context.Context) ([]entity.Subscription, error)
+	GetSubscriptionByID(ctx context.Context, subscriptionID string) (*entity.Subscription, error)
+	GetActiveUserSubscriptionByUserID(ctx context.Context, userID string) (*entity.UserSubscription, error)
+	CreateUserSubscription(ctx context.Context, subscription *entity.UserSubscription) error
 }

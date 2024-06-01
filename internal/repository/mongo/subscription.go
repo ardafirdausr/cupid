@@ -45,3 +45,43 @@ func (repo *SubscriptionRepository) GetAllSubscriptions(ctx context.Context) ([]
 
 	return subscriptions, nil
 }
+
+func (repo *SubscriptionRepository) GetSubscriptionByID(ctx context.Context, subscriptionID string) (*entity.Subscription, error) {
+	timeoutCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
+	var subscription entity.Subscription
+	var filter = bson.M{"_id": subscriptionID}
+	if err := repo.DB.Collection("subscriptions").FindOne(timeoutCtx, filter).Decode(&subscription); err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, errs.NewErrNotFound("subscription not found")
+		}
+
+		logger.Log.Err(err).Msg("failed to get subscription by id")
+		return nil, errs.NewErrInternal("failed to get subscription by id")
+	}
+
+	return &subscription, nil
+}
+
+func (repo *SubscriptionRepository) GetActiveUserSubscriptionByUserID(ctx context.Context, userID string) (*entity.UserSubscription, error) {
+	timeoutCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
+	var userSubscription entity.UserSubscription
+	var filter = bson.M{"userID": userID, "expiredAt": bson.M{"$gt": time.Now()}}
+	if err := repo.DB.Collection("user_subscriptions").FindOne(timeoutCtx, filter).Decode(&userSubscription); err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, errs.NewErrNotFound("subscription not found")
+		}
+
+		logger.Log.Err(err).Msg("failed to get subscription by id")
+		return nil, errs.NewErrInternal("failed to get subscription by id")
+	}
+
+	return &userSubscription, nil
+}
+
+func (repo *SubscriptionRepository) CreateUserSubscription(ctx context.Context, subscription *entity.UserSubscription) error {
+	return nil
+}

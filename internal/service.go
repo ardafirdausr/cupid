@@ -25,4 +25,6 @@ type MatchingServicer interface {
 
 type SubscriptionServicer interface {
 	GetAllSubscriptions(ctx context.Context) ([]entity.Subscription, error)
+	GetActiveUserSubscription(ctx context.Context) (*entity.UserSubscription, error)
+	CreateUserSubscription(ctx context.Context, param dto.CreateUserSubscriptionParam) (*entity.UserSubscription, error)
 }

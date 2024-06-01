@@ -9,7 +9,7 @@ package http
 import (
 	"com.ardafirdausr.cupid/app/http/handler"
 	"com.ardafirdausr.cupid/internal"
-	"com.ardafirdausr.cupid/internal/pkg/jwt"
+	"com.ardafirdausr.cupid/internal/helper"
 	"com.ardafirdausr.cupid/internal/pkg/mongo"
 	"com.ardafirdausr.cupid/internal/pkg/validator"
 	mongo2 "com.ardafirdausr.cupid/internal/repository/mongo"
@@ -34,17 +34,17 @@ func InitializeApp() (*app, func(), error) {
 	}
 	userRepository := mongo2.NewUserRepository(database)
 	userService := service.NewUserService(userRepository)
+	subscriptionRepository := mongo2.NewSubscriptionRepository(database)
+	subscriptionServicer := service.NewSubscriptionService(subscriptionRepository)
+	contextInjector := helper.NewContextInjector(userService, subscriptionServicer)
 	goPlaygroundValidator := validator.NewGoPlayValidator()
-	userHandler := handler.NewUserHandler(userService, goPlaygroundValidator)
+	userHandler := handler.NewUserHandler(userService, contextInjector, goPlaygroundValidator)
 	authService := service.NewAuthService(commonConfig, userRepository)
 	authHandler := handler.NewAuthHandler(authService, goPlaygroundValidator)
 	matchingRepository := mongo2.NewMatchingRepository(database)
 	matchingService := service.NewMatchingService(matchingRepository, userRepository)
-	helper := jwt.NewHelper(userService)
-	matchingHandler := handler.NewMatchingHandler(matchingService, goPlaygroundValidator, helper)
-	subscriptionRepository := mongo2.NewSubscriptionRepository(database)
-	subscriptionServicer := service.NewSubscriptionService(subscriptionRepository)
-	subscriptionHandler := handler.NewSubscriptionHandler(subscriptionServicer)
+	matchingHandler := handler.NewMatchingHandler(matchingService, goPlaygroundValidator, contextInjector)
+	subscriptionHandler := handler.NewSubscriptionHandler(subscriptionServicer, goPlaygroundValidator, contextInjector)
 	httpHttpRouter := newRouter(commonConfig, userHandler, authHandler, matchingHandler, subscriptionHandler)
 	httpApp := newApp(config2, httpHttpServer, httpHttpRouter, database)
 	return httpApp, func() {
@@ -73,6 +73,8 @@ var serviceSet = wire.NewSet(service.NewUserService, wire.Bind(new(internal.User
 
 var repoSet = wire.NewSet(mongo2.NewUserRepository, wire.Bind(new(internal.UserRepositorier), new(*mongo2.UserRepository)), mongo2.NewMatchingRepository, wire.Bind(new(internal.MatchingRepositorier), new(*mongo2.MatchingRepository)), mongo2.NewSubscriptionRepository, wire.Bind(new(internal.SubscriptionRepositorier), new(*mongo2.SubscriptionRepository)))
 
+var helperSet = wire.NewSet(helper.NewContextInjector)
+
 var driverSet = wire.NewSet(mongo.NewMongoDatabase)
 
-var pkgSet = wire.NewSet(validator.NewGoPlayValidator, wire.Bind(new(validator.Validator), new(*validator.GoPlaygroundValidator)), jwt.NewHelper)
+var pkgSet = wire.NewSet(validator.NewGoPlayValidator, wire.Bind(new(validator.Validator), new(*validator.GoPlaygroundValidator)))

@@ -6,7 +6,7 @@ import (
 	"com.ardafirdausr.cupid/app/http/handler/response"
 	"com.ardafirdausr.cupid/internal"
 	"com.ardafirdausr.cupid/internal/dto"
-	customJWT "com.ardafirdausr.cupid/internal/pkg/jwt"
+	helper "com.ardafirdausr.cupid/internal/helper"
 	"com.ardafirdausr.cupid/internal/pkg/logger"
 	"com.ardafirdausr.cupid/internal/pkg/validator"
 	"github.com/labstack/echo/v4"
@@ -15,10 +15,10 @@ import (
 type MatchingHandler struct {
 	matchingService internal.MatchingServicer
 	validator       validator.Validator
-	jwtHelper       *customJWT.Helper
+	jwtHelper       *helper.ContextInjector
 }
 
-func NewMatchingHandler(matchingService internal.MatchingServicer, validator validator.Validator, jwtHelper *customJWT.Helper) *MatchingHandler {
+func NewMatchingHandler(matchingService internal.MatchingServicer, validator validator.Validator, jwtHelper *helper.ContextInjector) *MatchingHandler {
 	return &MatchingHandler{
 		matchingService: matchingService,
 		validator:       validator,
@@ -37,7 +37,7 @@ func (handler *MatchingHandler) GetMatchingRecommendations(ctx echo.Context) err
 		return err
 	}
 
-	user, err := customJWT.GetUserFromContext(reqCtx)
+	user, err := helper.GetUserFromContext(reqCtx)
 	if err != nil {
 		return err
 	}

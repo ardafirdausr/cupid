@@ -5,7 +5,7 @@ package http
 import (
 	"com.ardafirdausr.cupid/app/http/handler"
 	"com.ardafirdausr.cupid/internal"
-	customJwt "com.ardafirdausr.cupid/internal/pkg/jwt"
+	"com.ardafirdausr.cupid/internal/helper"
 	"com.ardafirdausr.cupid/internal/pkg/mongo"
 	"com.ardafirdausr.cupid/internal/pkg/validator"
 	mongoRepository "com.ardafirdausr.cupid/internal/repository/mongo"
@@ -51,6 +51,10 @@ var repoSet = wire.NewSet(
 	wire.Bind(new(internal.SubscriptionRepositorier), new(*mongoRepository.SubscriptionRepository)),
 )
 
+var helperSet = wire.NewSet(
+	helper.NewContextInjector,
+)
+
 var driverSet = wire.NewSet(
 	mongo.NewMongoDatabase,
 )
@@ -58,7 +62,6 @@ var driverSet = wire.NewSet(
 var pkgSet = wire.NewSet(
 	validator.NewGoPlayValidator,
 	wire.Bind(new(validator.Validator), new(*validator.GoPlaygroundValidator)),
-	customJwt.NewHelper,
 )
 
 func InitializeApp() (*app, func(), error) {
@@ -67,6 +70,7 @@ func InitializeApp() (*app, func(), error) {
 		handlerSet,
 		repoSet,
 		serviceSet,
+		helperSet,
 		driverSet,
 		pkgSet,
 		newHTTPServer,

@@ -37,7 +37,11 @@ func (router *httpRouter) setupRouteOnServer(e *echo.Echo) {
 	// User routes
 	userGroup := versionGroup.Group("/users")
 	userGroup.Use(middleware.JWTMiddleware(router.config.JWTSecretKey))
-	userGroup.PUT("/:id", router.userHandler.Update)
+	userGroup.PUT("/:ID", router.userHandler.Update)
+
+	// User subscription routes
+	userSubscriptionGroup := userGroup.Group(":userID/subscriptions")
+	userSubscriptionGroup.POST("", router.subscriptionHandler.CreateUserSubscription)
 
 	// Auth routes
 	authGroup := versionGroup.Group("/auth")
