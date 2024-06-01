@@ -77,56 +77,39 @@ func (repo *MatchingMongoRepositry) GetMatchingRecommendations(ctx context.Conte
 		bson.D{
 			{Key: "$match", Value: bson.D{
 				{Key: "$and", Value: bson.A{
-					bson.D{{Key: "_id", Value: bson.D{
-						{Key: "$ne", Value: filter.UserID},
-					}}},
-					bson.D{{Key: "gender", Value: bson.D{
-						{Key: "$eq", Value: filter.Gender},
-					}}},
+					bson.D{{Key: "_id", Value: bson.D{{Key: "$ne", Value: filter.UserID}}}},
+					bson.D{{Key: "gender", Value: bson.D{{Key: "$eq", Value: filter.Gender}}}},
 				}},
 			}},
 		},
 		bson.D{
 			{Key: "$lookup", Value: bson.D{
 				{Key: "from", Value: "matchings"},
-				{Key: "localField", Value: "_id"},
-				{Key: "foreignField", Value: "user2ID"},
-				{Key: "as", Value: "receivedMatching"},
-			}},
-		},
-		bson.D{
-			{Key: "$match", Value: bson.D{
-				{Key: "receivedMatching", Value: bson.D{
-					{Key: "$not", Value: bson.D{
-						{Key: "$elemMatch", Value: bson.D{
-							{Key: "user1ID", Value: filter.UserID},
-						}},
-					}},
-				}},
-			}},
-		},
-		bson.D{
-			{Key: "$lookup", Value: bson.D{
-				{Key: "from", Value: "matchings"},
-				{Key: "localField", Value: "_id"},
-				{Key: "foreignField", Value: "user1ID"},
-				{Key: "as", Value: "sentMatching"},
-			}},
-		},
-		bson.D{
-			{Key: "$match", Value: bson.D{
-				{Key: "sentMatching", Value: bson.D{
-					{Key: "$not", Value: bson.D{
-						{Key: "$elemMatch", Value: bson.D{
-							{Key: "$and", Value: bson.A{
-								bson.D{{Key: "user2ID", Value: filter.UserID}},
-								bson.D{{Key: "$or", Value: bson.A{
-									bson.D{{Key: "status", Value: entity.MatchingStatusRejected}},
-									bson.D{{Key: "status", Value: entity.MatchingStatusMatched}},
+				{Key: "as", Value: "matching"},
+				{Key: "let", Value: bson.D{{Key: "userID", Value: "$_id"}}},
+				{Key: "pipeline", Value: bson.A{
+					bson.D{{Key: "$match", Value: bson.D{
+						{Key: "$expr", Value: bson.D{
+							{Key: "$or", Value: bson.A{
+								bson.D{{Key: "$and", Value: bson.A{ // user's matchings sent
+									bson.D{{Key: "$eq", Value: bson.A{"$user1ID", filter.UserID}}},
+									bson.D{{Key: "$eq", Value: bson.A{"$user2ID", "$$userID"}}},
+								}}},
+								bson.D{{Key: "$and", Value: bson.A{ // user's matchings received but not matched or rejected yet
+									bson.D{{Key: "$eq", Value: bson.A{"$user1ID", "$$userID"}}},
+									bson.D{{Key: "$eq", Value: bson.A{"$user2ID", filter.UserID}}},
+									bson.D{{Key: "$in", Value: bson.A{"$status", []entity.MatchingStatus{entity.MatchingStatusMatched, entity.MatchingStatusRejected}}}},
 								}}},
 							}},
 						}},
-					}},
+					}}},
+				}},
+			}},
+		},
+		bson.D{ // ignore users that have 2 conditions above
+			{Key: "$match", Value: bson.D{
+				{Key: "matching", Value: bson.D{
+					{Key: "$eq", Value: bson.A{}},
 				}},
 			}},
 		},
