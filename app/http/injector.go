@@ -28,6 +28,7 @@ var handlerSet = wire.NewSet(
 	handler.NewUserHandler,
 	handler.NewAuthHandler,
 	handler.NewMatchingHandler,
+	handler.NewSubscriptionHandler,
 )
 
 var serviceSet = wire.NewSet(
@@ -37,13 +38,17 @@ var serviceSet = wire.NewSet(
 	wire.Bind(new(internal.AuthServicer), new(*service.AuthService)),
 	service.NewMatchingService,
 	wire.Bind(new(internal.MatchingServicer), new(*service.MatchingService)),
+	service.NewSubscriptionService,
+	wire.Bind(new(internal.SubscriptionServicer), new(*service.SubscriptionServicer)),
 )
 
 var repoSet = wire.NewSet(
-	mongoRepository.NewUserMongoRepository,
-	wire.Bind(new(internal.UserRepositorier), new(*mongoRepository.UserMongoRepository)),
-	mongoRepository.NewMatchingMongoRepository,
-	wire.Bind(new(internal.MatchingRepositorier), new(*mongoRepository.MatchingMongoRepositry)),
+	mongoRepository.NewUserRepository,
+	wire.Bind(new(internal.UserRepositorier), new(*mongoRepository.UserRepository)),
+	mongoRepository.NewMatchingRepository,
+	wire.Bind(new(internal.MatchingRepositorier), new(*mongoRepository.MatchingRepository)),
+	mongoRepository.NewSubscriptionRepository,
+	wire.Bind(new(internal.SubscriptionRepositorier), new(*mongoRepository.SubscriptionRepository)),
 )
 
 var driverSet = wire.NewSet(

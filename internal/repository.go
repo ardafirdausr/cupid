@@ -23,3 +23,7 @@ type MatchingRepositorier interface {
 	CreateMatching(ctx context.Context, matching *entity.Matching) error
 	UpdateMatchingByID(ctx context.Context, matchingID string, matching *entity.Matching) error
 }
+
+type SubscriptionRepositorier interface {
+	GetAllSubscriptions(ctx context.Context) ([]entity.Subscription, error)
+}

@@ -12,15 +12,15 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-type UserMongoRepository struct {
+type UserRepository struct {
 	db *mongo.Database
 }
 
-func NewUserMongoRepository(db *mongo.Database) *UserMongoRepository {
-	return &UserMongoRepository{db: db}
+func NewUserRepository(db *mongo.Database) *UserRepository {
+	return &UserRepository{db: db}
 }
 
-func (repo *UserMongoRepository) GetUserByID(ctx context.Context, id string) (*entity.User, error) {
+func (repo *UserRepository) GetUserByID(ctx context.Context, id string) (*entity.User, error) {
 	timeoutCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
@@ -37,7 +37,7 @@ func (repo *UserMongoRepository) GetUserByID(ctx context.Context, id string) (*e
 	return &user, nil
 }
 
-func (repo *UserMongoRepository) GetUserByEmail(ctx context.Context, email string) (*entity.User, error) {
+func (repo *UserRepository) GetUserByEmail(ctx context.Context, email string) (*entity.User, error) {
 	timeoutCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
@@ -56,7 +56,7 @@ func (repo *UserMongoRepository) GetUserByEmail(ctx context.Context, email strin
 
 }
 
-func (repo *UserMongoRepository) CreateUser(ctx context.Context, user *entity.User) error {
+func (repo *UserRepository) CreateUser(ctx context.Context, user *entity.User) error {
 	timeoutCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
@@ -70,7 +70,7 @@ func (repo *UserMongoRepository) CreateUser(ctx context.Context, user *entity.Us
 	return nil
 }
 
-func (repo *UserMongoRepository) UpdateUserByID(ctx context.Context, id string, user *entity.User) error {
+func (repo *UserRepository) UpdateUserByID(ctx context.Context, id string, user *entity.User) error {
 	timeoutCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 

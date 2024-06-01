@@ -22,3 +22,7 @@ type MatchingServicer interface {
 	GetMatchingRecommendations(ctx context.Context, filter dto.MatchingRecommendationsFilter) ([]entity.User, error)
 	MatchMaking(ctx context.Context, param dto.CreateMatchingParam) (*entity.Matching, error)
 }
+
+type SubscriptionServicer interface {
+	GetAllSubscriptions(ctx context.Context) ([]entity.Subscription, error)
+}

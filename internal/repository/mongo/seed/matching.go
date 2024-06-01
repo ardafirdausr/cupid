@@ -9,7 +9,7 @@ import (
 )
 
 func SetupMatchingCollection(ctx context.Context, database *mongo.Database) error {
-	_, err := database.Collection("users").
+	_, err := database.Collection("matchings").
 		Indexes().
 		CreateMany(ctx, []mongo.IndexModel{
 			{Keys: bson.D{{Key: "user1ID", Value: 1}, {Key: "status", Value: 1}}},

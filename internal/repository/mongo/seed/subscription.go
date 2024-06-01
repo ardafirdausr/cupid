@@ -10,14 +10,14 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-var subscriptionPlans = []entity.SubscriptionPlan{
+var subscriptionPlans = []entity.Subscription{
 	{
 		ID:             entity.SubscriptionTypeFree,
 		Price:          0,
 		DurationInDays: -1,
 		Features: entity.SubscriptionFeature{
-			entity.SubscriptionFeatureMaxSwipe: 10,
-			entity.SubscriptionFeatureHasBadge: false,
+			MaxSwipe: 10,
+			HasBadge: false,
 		},
 	},
 	{
@@ -25,14 +25,14 @@ var subscriptionPlans = []entity.SubscriptionPlan{
 		Price:          50000,
 		DurationInDays: 30,
 		Features: entity.SubscriptionFeature{
-			entity.SubscriptionFeatureMaxSwipe: -1,
-			entity.SubscriptionFeatureHasBadge: true,
+			MaxSwipe: -1,
+			HasBadge: true,
 		},
 	}}
 
 func SetupSubscriptionPlanCollection(ctx context.Context, database *mongo.Database) error {
 	// seed the subscription plans
-	collection := database.Collection("subscription_plans")
+	collection := database.Collection("subscriptions")
 
 	// upsert the plans
 	upsertOption := options.Update().SetUpsert(true)
