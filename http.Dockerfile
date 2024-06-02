@@ -5,19 +5,7 @@ LABEL maintainer="Arda <arda@gmail.com>"
 # Update alpine repository indexs and next install git, openssh-client, and gcc
 RUN apk update && apk add --no-cache git openssh-client build-base
 
-# go get uses git internally. The following one liners will make git and consequently go get clone your package via SSH.
 RUN git config --global url."git@github.com:".insteadOf "https://github.com/"
-
-# add credentials on build
-ARG SSH_PRIVATE_KEY
-RUN mkdir /root/.ssh/
-RUN echo "${SSH_PRIVATE_KEY}" > /root/.ssh/id_rsa
-RUN echo "StrictHostKeyChecking no " > /root/.ssh/config
-RUN chmod 400 /root/.ssh/id_rsa
-
-# make sure your domain is accepted
-RUN touch /root/.ssh/known_hosts
-RUN ssh-keyscan github.com >> /root/.ssh/known_hosts
 
 # Set the Current Working Directory inside the container
 WORKDIR /app
