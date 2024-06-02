@@ -58,6 +58,10 @@ This repository uses trunk-based development branching strategy.
 
 For more information on trunk-based development, see [trunkbaseddevelopment.com](https://trunkbaseddevelopment.com/).
 
+### Deployment
+
+This project is using github actions for CI/CD. The detail of the deployment can be found in `.github/workflows` directory.
+
 ## Software Architecture
 
 This project uses monolithic architecture for the mvp version. The reason for choosing a monolithic architecture is because it is easier to develop and deploy. The app is also small enough that a monolithic architecture is sufficient.  
