@@ -37,6 +37,13 @@ The postman collection can be found in this [link](https://documenter.getpostman
   - filter by location
 - ...Other features
 
+### Non-Functional
+
+- The system should respond to user swipes within 200 milliseconds under normal load.
+- The system must handle at least 100 concurrent users with an average of 100 interactions per second.
+- The system must be able to scale horizontally to handle increased load by adding more instances of services.
+- Maintain logs of critical actions to trace and investigate security incidents.
+
 ## MVP
 
 ### Software Architecture
